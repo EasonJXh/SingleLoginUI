@@ -1,0 +1,326 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <title>Engine Core</title>
+    <!--必要样式-->
+    <link href="./Content/styles.css" rel="stylesheet" />
+    <!--調整各個元素的樣式-->
+    <link href="./Content/check.css" rel="stylesheet" />
+    <link href="./Content/loaders.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="load_canvas" id="load_canvas">
+        <img class="load_img" src="./Content/Home/smoking_loading.gif" alt="加載中..." />
+    </div>
+    <!--背景動畫效果-->
+    <div class="container demo-1">
+        <div class="content">
+            <div id="large-header" class="large-header">
+                <canvas id="demo-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class='login'>
+        <div class="login_title_icon">
+            <img src="./Images/login/aislogo.svg"/>
+        </div>
+        <div class="login_title">
+            <span>***********</span>
+        </div>
+        <div class="login_littletitle">
+            <span>AI Data Driven Engine Platform</span>
+        </div>
+        <!-- <div class="loginico_back">
+            <img src="./Images/login/super.gif" alt="" />
+        </div> -->
+        <div class='login_ico'>
+            <img alt="" src="./Images/login/defaultUserIcon.svg" />
+        </div>
+        <div class='login_fields'>
+            <div class='login_fields__user'>
+                <div class='icon'>
+                    <img alt="" src="./Images/login/user_icon_copy1.png" />
+                </div>
+                <input name="login" placeholder='賬號' maxlength="16" type='text' autocomplete="off" />
+                <div class='validation'>
+                    <img alt="" src="./Images/login/tick.png" />
+                </div>
+            </div>
+            <div class='login_fields__password'>
+                <div class='icon'>
+                    <img alt="" src="./Images/login/key1.png" />
+                </div>
+                <input name="pwd" placeholder='密碼' maxlength="16" type='text' autocomplete="off" />
+                <div class='validation'>
+                    <img alt="" src="./Images/login/tick.png" />
+                </div>
+            </div>
+            <div class='login_fields__password'>
+                <div class='icon'>
+                    <img alt="" src="./Images/login/key2.png" />
+                </div>
+                <input name="code" placeholder='驗證碼' maxlength="4" type='text' name="ValidateNum" autocomplete="off" />
+                <div class='validation' style="opacity: 1; right: -5px; top: -3px;">
+                    <canvas class="J_codeimg" id="myCanvas" onclick="Code();">对不起，您的浏览器不支持canvas，请下载最新版浏览器!</canvas>
+                </div>
+            </div>
+            <a href="Password.html" target="_blank">忘記密碼？</a>
+            <div class='login_fields__submit'>
+                <input type='button' id="btn_login" value='註冊/登录' />
+            </div>
+        </div>
+        <div class='success'>
+        </div>
+    </div>
+    <div class='authent'>
+        <div class="loader" style="height: 44px; width: 44px; margin-left: 28px;">
+            <div class="loader-inner ball-clip-rotate-multiple">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <p>LOGING IN...</p>
+    </div>
+    <div class="OverWindows"></div>
+    <script type="text/javascript" src="./Scripts/Login/jquery.min.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/stopExecutionOnTimeout.js?t=1"></script>
+    <script type="text/javascript" src="./Scripts/Login/layui.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/Particleground.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/Treatment.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/jquery.mockjax.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/EasePack.min.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/TweenLite.min.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/rAF.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/login.js"></script>
+    <script type="text/javascript" src="./Scripts/Login/d-toast.min.js"></script>
+    <script type="text/javascript">
+        loadingEffect();
+        function enter() {
+            document.getElementById('btn_next').style.backgroundColor = '#4FA1D9';
+            document.getElementById('btn_next').style.color = 'white';
+            document.getElementById('btn_next').style.cursor = 'pointer';
+        }
+        function leave() {
+            document.getElementById('btn_next').style.background = 'transparent'
+            document.getElementById('btn_next').style.color = '#4FA1D9';
+        }
+        function login() {
+            window.location.href = "Home.html";
+        }
+
+        //Ajax異步請求數據時加載動畫
+        function loadingEffect() {
+            var loading = $('#load_canvas');
+            loading.hide();
+            $(document).ajaxStart(function () {
+                loading.show();
+            }).ajaxStop(function () {
+                loading.hide();
+            });
+        }
+
+        function testInner(i, isShowIcon) {
+
+            var config = {
+                title: "溫馨提示",//通知标题部分
+                body: i,//通知内容部分
+                inner: true
+            }
+
+            if (isShowIcon == true) {
+                config.icon = "./Images/login/agent.gif";//通知的图片 可选
+            }
+
+            //仿桌面通知
+            new dToast(config);
+        }
+        var canGetCookie = 0;//是否支持存储Cookie 0 不支持 1 支持
+        var ajaxmockjax = 1;//是否启用虚拟Ajax的请求响 0 不启用  1 启用
+        //默认账号密码
+        var truelogin = "Eason";
+        var truepwd = "123456";
+
+        var CodeVal = 0;
+        Code();
+        //生成驗證碼
+        function Code() {
+            if (canGetCookie == 1) {
+                createCode("AdminCode");
+                var AdminCode = getCookieValue("AdminCode");
+                showCheck(AdminCode);
+            } else {
+                showCheck(createCode(""));
+            }
+        }
+        //檢查驗證碼是否正確
+        function showCheck(a) {
+            CodeVal = a;
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0, 0, 1000, 1000);
+            ctx.font = "80px 'Hiragino Sans GB'";
+            ctx.fillStyle = "#E8DFE8";
+            ctx.fillText(a, 0, 100);
+        }
+        $(document).keypress(function (e) {
+            // 回车键事件  
+            if (e.which == 13) {
+                $('input[type="button"]').click();
+            }
+        });
+        $('input[name="pwd"]').focus(function () {
+            $(this).attr('type', 'password');
+        });
+        $('input[type="text"]').focus(function () {
+            $(this).prev().animate({ 'opacity': '1' }, 200);
+        });
+        $('input[type="text"],input[type="password"]').blur(function () {
+            $(this).prev().animate({ 'opacity': '.5' }, 200);
+        });
+        $('input[name="login"],input[name="pwd"]').keyup(function () {
+            var Len = $(this).val().length;
+            if (!$(this).val() == '' && Len >= 5) {
+                $(this).next().animate({
+                    'opacity': '1',
+                    'right': '30'
+                }, 200);
+            } else {
+                $(this).next().animate({
+                    'opacity': '0',
+                    'right': '20'
+                }, 200);
+            }
+        });
+        var open = 0;
+        layui.use('layer', function () {
+            //var msgalert = '默认账号:' + truelogin + '<br/> 默认密码:' + truepwd;
+            //var index = layer.alert(msgalert, { icon: 6, time: 4000, offset: 't', closeBtn: 0, title: '友情提示', btn: [], anim: 2, shade: 0 });
+            //layer.style(index, {
+            //    color: '#777'
+            //});
+            //非空验证
+            $('input[id="btn_login"]').click(function () {
+                var login = $('input[name="login"]').val();
+                var pwd = $('input[name="pwd"]').val();
+                var code = $('input[name="code"]').val();
+                if (login == '') {
+                    //ErroAlert('请输入您的账号');
+                    testInner('请输入您的账号！', true);
+                } else if (pwd == '') {
+                    //ErroAlert('请输入密码');
+                    testInner('请输入密码！', true);
+                } else if (code == '' || code.length != 4) {
+                    //ErroAlert('输入验证码');
+                    testInner('输入验证码！', true);
+                } else {
+                    //驗證三個選項都輸入進行认证..
+                    //fullscreen();
+                    $('.login').addClass('test'); //倾斜特效
+                    setTimeout(function () {
+                        $('.login').addClass('testtwo'); //平移特效
+                    }, 300);
+                    setTimeout(function () {
+                        $('.authent').show().animate({ right: -320 }, {
+                            easing: 'easeOutQuint',
+                            duration: 600,
+                            queue: false
+                        });
+                        $('.authent').animate({ opacity: 1 }, {
+                            duration: 200,
+                            queue: false
+                        }).addClass('visible');
+                    }, 500);
+
+                    //登陆
+                    var JsonData = { login: login, pwd: pwd, code: code };
+                    //此处做为ajax内部判断
+                    var url = "";
+                    if (JsonData.login == truelogin && JsonData.pwd == truepwd && JsonData.code.toUpperCase() == CodeVal.toUpperCase()) {
+                        url = "Ajax/Login";
+                    } else {
+                        url = "Ajax/LoginFalse";
+                    }
+                    AjaxPost(url, JsonData,
+                        function () {
+                            //ajax加载中動加入
+                        },
+                        function (data) {
+                            //ajax返回 
+                            //认证完成
+                            setTimeout(function () {
+                                $('.authent').show().animate({ right: 90 }, {
+                                    easing: 'easeOutQuint',
+                                    duration: 600,
+                                    queue: false
+                                });
+                                $('.authent').animate({ opacity: 0 }, {
+                                    duration: 200,
+                                    queue: false
+                                }).addClass('visible');
+                                $('.login').removeClass('testtwo'); //平移特效
+                            }, 2000);
+                            setTimeout(function () {
+                                $('.authent').hide();
+                                $('.login').removeClass('test');
+                                if (data.Status == 'ok') {
+                                    //登录成功
+                                    $('.login div').fadeOut(100);
+                                    $('.success').fadeIn(1000);
+                                    $('.success').html(data.Text);
+                                    //跳转操作
+
+                                } else {
+                                    testInner("用戶名或密碼或驗證碼輸入驗證有誤！", true);
+                                    //AjaxErro(data);
+                                }
+                            }, 2400);
+                        })
+                }
+            })
+        })
+        //全屏
+        var fullscreen = function () {
+            elem = document.body;
+            if (elem.webkitRequestFullScreen) {
+                elem.webkitRequestFullScreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.requestFullScreen) {
+                elem.requestFullscreen();
+            } else {
+                浏览器不支持全屏API或已被禁用
+            }
+        }
+        if (ajaxmockjax == 1) {
+            $.mockjax({
+                url: 'Ajax/Login',
+                status: 200,
+                responseTime: 50,
+                responseText:
+                {
+                    "Status": "ok", "Text": "歡迎你登錄,管理員！<br /></br>生活就像一首長歌,一杯清酒,一杯淡茶,</br></br>它永遠都只有在你願意用心品嘗的時候甜!</br></br>Good Luck!"
+                        + "<div class=\"success_agent\"><img alt=\"\" src=\"./Images/login/agent.gif\" /></div>"
+                        + "<div class=\"success_next\"><input type=\"button\" id=\"btn_next\" value=\">\" onmouseover=\"enter()\" onmouseout=\"leave()\" onclick=\"login()\" /></div> "
+                }
+            });
+            $.mockjax({
+                url: 'Ajax/LoginFalse',
+                status: 200,
+                responseTime: 50,
+                responseText: { "Status": "Erro", "Erro": "用戶名或密碼或驗證碼輸入驗證有誤！" }
+            });
+        }
+    </script>
+</body>
+
+</html>
